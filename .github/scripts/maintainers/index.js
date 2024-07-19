@@ -1,5 +1,5 @@
 const core = require("@actions/core");
-const { getOctokit, context} = require("@actions/github");
+const { getOctokit, context } = require("@actions/github");
 const yaml = require("js-yaml");
 const fs = require("fs");
 const { saveCache, loadCache, printAPICallsStats } = require("./cache");
@@ -136,12 +136,14 @@ async function run() {
 
     const repos = await getRepositories(
       github,
-      context.repo.owner,
+      // context.repo.owner,
+      "asyncapi",
       config.ignoredRepos,
     );
     const codeownersFiles = await getAllCodeownersFiles(
       github,
-      context.repo.owner,
+      // context.repo.owner,
+      "asyncapi",
       repos,
     );
 
