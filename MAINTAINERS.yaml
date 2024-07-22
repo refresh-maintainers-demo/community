@@ -60,7 +60,6 @@
   availableForHire: true
   isTscMember: true
   repos:
-    - github-action-for-cli
     - cli
 - name: Cameron Rushton
   github: cameronrushton
