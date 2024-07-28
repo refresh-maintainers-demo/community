@@ -12,6 +12,7 @@ module.exports = async ({github, context, core}) => {
     try {
         await run(github, context, core);
     } catch (error) {
+        console.log(error)
         core.setFailed(`An error occurred: ${error}`);
     }
 }
@@ -78,7 +79,7 @@ async function collectCurrentMaintainers(codeownersFiles, github, core) {
       const key = owner.toLowerCase();
       if (!currentMaintainers[key]) {
         // Fetching GitHub profile is useful to ensure that all maintainers are valid (e.g., their GitHub accounts haven't been deleted).
-        const profile = await getGitHubProfile(github, owner);
+        const profile = await getGitHubProfile(github, owner, core);
         if (!profile) {
           core.warning(
             `[repo: ${codeowners.repo}]: GitHub profile not found for ${owner}.`,
@@ -118,6 +119,7 @@ function refreshPreviousMaintainers(previousMaintainers, currentMaintainers, cor
 
     updatedMaintainers.push({
       ...previousEntry,
+      githubID: currentMaintainer.githubID,
       repos: currentMaintainer.repos,
     });
   }
@@ -139,13 +141,17 @@ async function run(github, context, core) {
 
     const repos = await getRepositories(
       github,
-      context.repo.owner,
+      // context.repo.owner,
+      "asyncapi",
       config.ignoredRepos,
+        core
     );
     const codeownersFiles = await getAllCodeownersFiles(
       github,
-      context.repo.owner,
+      // context.repo.owner,
+        "asyncapi",
       repos,
+        core,
     );
 
     const previousMaintainers = yaml.load(
@@ -173,6 +179,6 @@ async function run(github, context, core) {
 
     printAPICallsStats(core);
 
-    await summarizeChanges(previousMaintainers, refreshedMaintainers);
+    await summarizeChanges(previousMaintainers, refreshedMaintainers, core);
     saveCache();
 }

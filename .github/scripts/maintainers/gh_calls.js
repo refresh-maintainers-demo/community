@@ -55,6 +55,7 @@ async function getGitHubProfile(github, login, core) {
     return removeNulls({
       name: profile.name ?? login,
       github: login,
+      githubID: profile.id,
       twitter: profile.twitter_username,
       availableForHire: profile.hireable,
       isTscMember: false,
