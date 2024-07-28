@@ -139,13 +139,17 @@ async function run(github, context, core) {
 
     const repos = await getRepositories(
       github,
-      context.repo.owner,
+      // context.repo.owner,
+      "asyncapi",
       config.ignoredRepos,
+        core
     );
     const codeownersFiles = await getAllCodeownersFiles(
       github,
-      context.repo.owner,
+      // context.repo.owner,
+        "asyncapi",
       repos,
+        core,
     );
 
     const previousMaintainers = yaml.load(
@@ -173,6 +177,6 @@ async function run(github, context, core) {
 
     printAPICallsStats(core);
 
-    await summarizeChanges(previousMaintainers, refreshedMaintainers);
+    await summarizeChanges(previousMaintainers, refreshedMaintainers, core);
     saveCache();
 }

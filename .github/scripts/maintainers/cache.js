@@ -7,7 +7,7 @@ module.exports = {
   printAPICallsStats,
 };
 
-const CODEOWNERS_CACHE_PATH = "github.api.cache.json";
+const CODEOWNERS_CACHE_PATH = "./.github/scripts/maintainers/github.api.cache.json";
 
 let cacheEntries = {};
 
