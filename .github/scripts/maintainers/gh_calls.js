@@ -1,9 +1,8 @@
-const core = require("@actions/core");
 const { fetchWithCache } = require("./cache");
 
 module.exports = { getGitHubProfile, getAllCodeownersFiles, getRepositories };
 
-async function getRepositories(github, owner, ignoredRepos) {
+async function getRepositories(github, owner, ignoredRepos, core) {
   core.startGroup(
     `Getting list of all public, non-archived repositories owned by ${owner}`,
   );
@@ -41,7 +40,7 @@ async function getRepositories(github, owner, ignoredRepos) {
   return repos.filter((repo) => !ignoredRepos.includes(repo.name));
 }
 
-async function getGitHubProfile(github, login) {
+async function getGitHubProfile(github, login, core) {
   try {
     const profile = await fetchWithCache(
       `profile:${login}`,
@@ -51,8 +50,8 @@ async function getGitHubProfile(github, login) {
           headers,
         });
       },
+      core,
     );
-
     return removeNulls({
       name: profile.name ?? login,
       github: login,
@@ -73,7 +72,7 @@ async function getGitHubProfile(github, login) {
 // https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners#codeowners-file-location
 //
 // Detect the repository default branch automatically.
-async function getCodeownersFile(github, owner, repo) {
+async function getCodeownersFile(github, owner, repo, core) {
   const paths = ["CODEOWNERS", "docs/CODEOWNERS", ".github/CODEOWNERS"];
 
   for (const path of paths) {
@@ -94,6 +93,7 @@ async function getCodeownersFile(github, owner, repo) {
             },
           });
         },
+        core,
       );
     } catch (error) {
       core.warning(
@@ -108,11 +108,11 @@ async function getCodeownersFile(github, owner, repo) {
   return null;
 }
 
-async function getAllCodeownersFiles(github, owner, repos) {
+async function getAllCodeownersFiles(github, owner, repos, core) {
   core.startGroup(`Fetching CODEOWNERS files for ${repos.length} repositories`);
   const files = [];
   for (const repo of repos) {
-    const data = await getCodeownersFile(github, owner, repo.name);
+    const data = await getCodeownersFile(github, owner, repo.name, core);
     if (!data) {
       continue;
     }
